@@ -44,7 +44,7 @@ def main():
     parser.add_argument('--frida_server_path', nargs=1,
                         help='if set, tries to upload and run frida-server on the device.')
     parser.add_argument('--device', nargs=1,
-                        help="if set, use plugged device with given serial.", default=[None])
+                        help="if set, use plugged device with the given serial.", default=[None])
     parser.add_argument('--parameters', nargs=1,
                         help="if set, path to a json file with parameters for the script.\nNOTE: if this is set, it is assumed the script exports a run(json_str) function.", default=[None])
     args = parser.parse_args()
@@ -57,11 +57,11 @@ def main():
     if args.device[0] is not None:
         target_device = args.device[0]
     if args.parameters[0] is not None:
-        script_params=args.parameters[0]
+        script_params = args.parameters[0]
         _logger.info('reading parameters json from %s ...' % (script_params))
         with open(script_params, 'r') as f:
-            script_params=f.read()
-        
+            script_params = f.read()
+
     hook_utils.adb_init_device(target_device)
     try:
         if args.dump_out_path is not None:
@@ -86,7 +86,8 @@ def main():
         hook_utils.app_run(args.package_name[0])
 
         # get session
-        session = hook_utils.frida_get_session(args.package_name[0], target_device)
+        session = hook_utils.frida_get_session(
+            args.package_name[0], target_device)
 
         # run script
         script = hook_utils.frida_load_script(

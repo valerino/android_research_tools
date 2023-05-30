@@ -1,29 +1,14 @@
 #!/usr/bin/env bash
+source ./shared.sh
+
 function usage {
   echo "run lldb-server on connected(USB) android device and starts debugging session."
-  echo "usage: $0 [-d usb device id][-n to not start local lldb]"
+  echo "usage: $0 [-d device serial][-n to not start local lldb]"
   echo "env vars:"
   echo "    _LLDB_SERVER_PATH (path to android lldb-server to push on device, default=\"$HOME/Library/Android/sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/darwin-x86_64/lib64/clang/14.0.6/lib/linux/aarch64/lldb-server\")"
   echo "    _LLDB_PATH (lldb client, default=\"lldb\")"
   echo "    _LLDB_PORT (lldb port, will be forwarded from adb to localhost, default=8086)"
   echo "    _LLDB_INIT_SCRIPT (lldb init scripts, default=\"./lldb_init.txt\")"
-}
-
-function run_adb {
-  _tmp=("$@")
-
-  set -- "adb"
-  if [ ! -z "$_DEVICE" ]; then
-    set -- "$@" -s "$_DEVICE"
-    export ANDROID_SERIAL=$_DEVICE
-  fi
-
-  for _i in "${_tmp[@]}"; do
-    set -- "$@" "$_i"
-  done
-
-  echo "running $@ ..."
-  "$@"
 }
 
 while getopts "d:n" arg; do

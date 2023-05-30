@@ -17,7 +17,7 @@ def main():
     parser.add_argument('--package_name', nargs=1,
                         help='optional packagename for filtering output.', default=[None])
     parser.add_argument('--device', nargs=1,
-                        help="if set, use plugged device with given serial.", default=[None])
+                        help="if set, use plugged device with the given serial.", default=[None])
     args = parser.parse_args()
     target_device=None
     package_name=None
