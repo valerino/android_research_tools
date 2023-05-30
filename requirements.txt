@@ -1,0 +1,4 @@
+frida
+frida-tools
+py3adb
+coloredlogs

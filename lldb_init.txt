@@ -1,0 +1,3 @@
+platform select remote-android
+platform connect connect://:8086
+command script import ./lldbsh.py
