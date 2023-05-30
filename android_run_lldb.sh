@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 function usage {
   echo "run lldb-server on connected(USB) android device and starts debugging session."
-  echo "usage: $0 [usb device id]"
+  echo "usage: $0 [-d usb device id][-n to not start local lldb]"
   echo "env vars:"
   echo "    _LLDB_SERVER_PATH (path to android lldb-server to push on device, default=\"$HOME/Library/Android/sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/darwin-x86_64/lib64/clang/14.0.6/lib/linux/aarch64/lldb-server\")"
   echo "    _LLDB_PATH (lldb client, default=\"lldb\")"
@@ -26,10 +26,13 @@ function run_adb {
   "$@"
 }
 
-while getopts "d:" arg; do
+while getopts "d:n" arg; do
   case $arg in
   d)
     _DEVICE="${OPTARG}"
+    ;;
+  n)
+    _NOSTARTLOCAL=1
     ;;
   *)
     usage "$0"
@@ -82,8 +85,16 @@ run_adb shell su -c "chmod 755 /data/local/tmp/lldb-server"
 run_adb shell su -c "/data/local/tmp/lldb-server platform --listen \"*:$_LLDB_PORT\" --server" &
 sleep 2
 
-echo "starting $_LLDB -s $_LLDB_INIT_SCRIPT ..."
-$_LLDB_PATH -s "$_LLDB_INIT_SCRIPT"
+if [ -z "$_NOSTARTLOCAL" ]; then
+  echo "starting $_LLDB -s $_LLDB_INIT_SCRIPT ..."
+  $_LLDB_PATH -s "$_LLDB_INIT_SCRIPT"
+else
+  echo "skipping starting lldb ...."
+  echo "connect manually with:"
+  echo ""
+  echo "platform select remote-android"
+  echo "platform connect connect://:$_LLDB_PORT"
+fi
 
 # platform select remote-android
 # platform connect connect://:8086

@@ -1,0 +1,4 @@
+.DS_Store
+frida-server*
+__handlers__
+__pycache__
