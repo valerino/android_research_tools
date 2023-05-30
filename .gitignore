@@ -2,3 +2,4 @@
 frida-server*
 __handlers__
 __pycache__
+.vscode

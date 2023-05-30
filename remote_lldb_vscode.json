@@ -12,7 +12,7 @@
             "initCommands": [
                 "platform select remote-android",
                 "platform connect connect://:8086",
-                "settings set target.inherit-env false",
+                "settings set target.inherit-env false"
             ]
         }
     ]
