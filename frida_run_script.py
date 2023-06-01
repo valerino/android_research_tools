@@ -25,10 +25,11 @@ def on_message(message, data):
 
     global _outfile, _detach_requested
     # _logger.info('message=%s, data=%s' % (message, data))
-    if message['payload'] == 'detach':
-        _logger.warning('script requested detaching!')
-        _detach_requested = True
-        return
+    if message.get('payload', None) is not None:
+        if message['payload'] == 'detach':
+            _logger.warning('script requested detaching!')
+            _detach_requested = True
+            return
 
     if _outfile is not None and data is not None:
         _outfile.write(data)

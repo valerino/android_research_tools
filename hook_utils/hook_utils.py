@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import subprocess
 import sys
 import time
@@ -20,7 +21,9 @@ def frida_server_install(path: str):
     Args:
         path (str): _description_
     """
-    _logger.info('installing frida-server ...')
+    path = os.path.abspath(path)
+    _logger.info(
+        'installing frida-server %s as /data/local/tmp/frida-server ...' % (path))
     process_kill('frida-server')
     _adb.shell_command(
         'su -c "rm /data/local/tmp/frida-server"')
