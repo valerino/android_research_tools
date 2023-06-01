@@ -8,12 +8,25 @@
             "name": "Remote launch",
             "type": "lldb",
             "request": "attach",
-            "pid": "18091",
+            "pid": "${input:pid}",
             "initCommands": [
                 "platform select remote-android",
-                "platform connect connect://:8086",
+                "platform connect connect://:${input:port}",
                 "settings set target.inherit-env false"
             ]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "pid",
+            "type": "promptString",
+            "description": "PID to attach"
+        },
+        {
+            "id": "port",
+            "type": "promptString",
+            "description": "lldb-server port",
+            "default": "8086"
         }
     ]
 }
