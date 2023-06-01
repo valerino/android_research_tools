@@ -5,7 +5,7 @@ import sys
 import time
 
 import frida
-from numpy import stack
+from frida.core import Device
 from py3adb import ADB
 
 _logger = logging.getLogger()
@@ -71,8 +71,8 @@ def frida_get_session(package_name: str, dev: str = None) -> frida.core.Session:
     """
     if dev is not None:
         _logger.info('using device=%s for frida session ...' % (dev))
-        
-    dev = frida.get_device(id=dev)
+
+    dev: Device = frida.get_device(id=dev)
     apps = dev.enumerate_applications()
     session = None
     for a in apps:
@@ -101,7 +101,7 @@ def frida_cleanup(session: frida.core.Session, script: frida.core.Script):
         session.detach()
 
 
-def frida_load_script(session: frida.core.Session, path: str, handlers: list=None, params: dict=None) -> frida.core.Script:
+def frida_load_script(session: frida.core.Session, path: str, handlers: list = None, params: dict = None) -> frida.core.Script:
     """loads a js script from file in frida
 
     Args:
@@ -131,13 +131,14 @@ def frida_load_script(session: frida.core.Session, path: str, handlers: list=Non
         _logger.info('getting script exports ...')
         exports = the_script.list_exports_sync()
         if 'run' not in exports:
-            raise Exception('script must have run(params) exported function, where params is a json dict!')
-        
+            raise Exception(
+                'script must have run(params) exported function, where params is a json dict!')
+
         # call run with params!
         api = the_script.exports_sync
         _logger.info('calling script run() ...')
         api.run(params)
-        
+
     return the_script
 
 
@@ -150,6 +151,7 @@ def process_kill(package_name: str):
     _logger.info('killing %s ...' % package_name)
     _adb.shell_command(
         'su -c "pkill -9 %s"' % (package_name))
+
 
 def adb_init_device(dev: str = None):
     """sets the target device string for ADB, or None to use the (single) plugged device
@@ -165,14 +167,15 @@ def adb_init_device(dev: str = None):
         return
     if len(l) > 1 and dev is None:
         raise Exception('multiple devices plugged(%s) !' % (l))
-        
+
     if dev in l or dev.upper() in l:
         _logger.info('setting target adb device to %s ...' % (dev))
         _adb.set_target_device(dev)
     else:
         raise Exception('device %s not found!' % (dev))
 
-def adb_logcat(package_name: str=None, device: str=None):
+
+def adb_logcat(package_name: str = None, device: str = None):
     """gets adb logcat output to stdout, runs until interrupted. do not uses py3adb.
 
     Args:
@@ -194,13 +197,14 @@ def adb_logcat(package_name: str=None, device: str=None):
         res = _adb.shell_command('pidof %s' % (package_name))
         if res is None:
             raise Exception('%s not found/running!' % (package_name))
-        
+
         ar.append('--pid')
         ar.append(res[0])
-    
+
     _logger.info('running: %s ...' % (ar))
     subprocess.run(ar, stderr=sys.stderr, stdout=sys.stdout, check=False)
-    
+
+
 def app_run(package_name: str):
     """runs an app (only if not yet running) specifying the package name.
 

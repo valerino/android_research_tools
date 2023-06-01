@@ -12,6 +12,7 @@ import hook_utils.hook_utils as hook_utils
 coloredlogs.install(level='INFO')
 _logger = logging.getLogger()
 _outfile = None
+_detach_requested = False
 
 
 def on_message(message, data):
@@ -22,8 +23,13 @@ def on_message(message, data):
         data (_type_): _description_
     """
 
-    global _outfile
-    # _logger.info(data)
+    global _outfile, _detach_requested
+    # _logger.info('message=%s, data=%s' % (message, data))
+    if message['payload'] == 'detach':
+        _logger.warning('script requested detaching!')
+        _detach_requested = True
+        return
+
     if _outfile is not None and data is not None:
         _outfile.write(data)
 
@@ -46,7 +52,7 @@ def main():
     parser.add_argument('--device', nargs=1,
                         help="if set, use plugged device with the given serial.", default=[None])
     parser.add_argument('--parameters', nargs=1,
-                        help="if set, path to a json file with parameters for the script.\nNOTE: if this is set, it is assumed the script exports a run(json_str) function.", default=[None])
+                        help="if set, JSON string, or path to a json file with parameters for the script.\nNOTE: if this is set, it is assumed the script exports a run(json_str) function.", default=[None])
     args = parser.parse_args()
     session = None
     script = None
@@ -59,8 +65,14 @@ def main():
     if args.parameters[0] is not None:
         script_params = args.parameters[0]
         _logger.info('reading parameters json from %s ...' % (script_params))
-        with open(script_params, 'r') as f:
-            script_params = f.read()
+        if script_params.startswith('{'):
+            _logger.info('parameters passed as JSON string: %s' %
+                         (script_params))
+        else:
+            _logger.info('parameters passed as file path: %s' %
+                         (script_params))
+            with open(script_params, 'r') as f:
+                script_params = f.read()
 
     hook_utils.adb_init_device(target_device)
     try:
@@ -94,8 +106,12 @@ def main():
             session, args.js_path[0], handlers=[("message", on_message)], params=script_params)
 
         # done
-        _logger.info("\nwaiting for CTRL-C ...\n")
+        _logger.info('\nwaiting for CTRL-C or "detach" from script ...\n')
         while 1:
+            global _detach_requested
+            if _detach_requested:
+                break
+
             sleep(1)
 
     except Exception as ex:
