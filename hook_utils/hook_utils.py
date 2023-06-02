@@ -80,9 +80,11 @@ def frida_get_session(package_name: str, dev: str = None) -> frida.core.Session:
     Returns:
         frida.core.Session: _description_
     """
-    if dev is not None:
-        _logger.info('using device=%s for frida session ...' % (dev))
+    if dev is None:
+        _, l = _adb.get_devices()
+        dev = l[0]
 
+    _logger.info('using device=%s for frida session ...' % (dev))
     dev: Device = frida.get_device(id=dev)
     apps = dev.enumerate_applications()
     session = None
@@ -172,7 +174,7 @@ def adb_init_device(dev: str = None):
         dev (str): _description_
     """
     res, l = _adb.get_devices()
-    if res != 0:
+    if res != 0 or len(l) == 0:
         raise Exception('no device plugged!')
     if len(l) == 1:
         # only 1 device plugged

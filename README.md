@@ -7,6 +7,16 @@
     ~~~bash
     ./frida_run_script.py --device R58NC03HG5E --package_name com.whatsapp --js_path ./frida_get_address.js --parameters '{"module": "libwhatsapp.so", "offset": "0x48d198"}'
     ~~~
+  
+  - [android_get_address.sh](./android_get_address.sh): shortcut for *frida_run_script.py* + *frida_get_address.js*
+
+    ~~~bash
+    export _DEVICE=037AYV1WBW
+    export _PROCESS="com.whatsapp"
+    export _MODULE="libwhatsapp.so"
+    export _DEVICE="$_CALLER"
+    ./tools/android_get_address.sh -a 0x6b6998 
+    ~~~
 
 - [android_logcat.sh](./adb_logcat.py): runs *adb logcat* on the device, can filter for package name, supports multiple connected devices.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source ./shared.sh
+source "$(dirname $(realpath $0))/shared.sh"
 
 function usage {
     echo "get /proc/pid/maps giving a process/package name."

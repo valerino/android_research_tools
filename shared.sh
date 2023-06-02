@@ -1,3 +1,8 @@
+function get_absolute_script_parent_path() {
+    # get caller script parent path
+    dirname $(realpath $0)
+}
+
 function get_result_from_lfs_string() {
     # split \n separated string, and get nth element
     # $1: \n separated strings

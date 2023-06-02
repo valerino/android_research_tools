@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source ./shared.sh
+source "$(dirname $(realpath $0))/shared.sh"
 
 function usage {
   echo "run lldb-server on connected(USB) android device and starts debugging session."
