@@ -1,5 +1,5 @@
 platform select remote-android
 platform connect connect://:8086
 command script import ./lldbsh.py
-process handle -p true -s false -n true SIGINT SIGSTOP SIGILL SIGABRT
+process handle -p true -s false -n true SIGINT SIGSTOP SIGILL SIGSEGV SIGABRT
 
