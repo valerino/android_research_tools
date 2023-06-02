@@ -41,7 +41,7 @@ if [ -z "$_LLDB_PORT" ]; then
   _LLDB_PORT="8086"
 fi
 if [ -z "$_LLDB_INIT_SCRIPT" ]; then
-  _LLDB_INIT_SCRIPT="./lldb_init.txt"
+  _LLDB_INIT_SCRIPT="$(get_absolute_script_parent_path)/lldb_init.txt"
 fi
 
 echo "_LLDB_SERVER_PATH=$_LLDB_SERVER_PATH"
