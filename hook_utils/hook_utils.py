@@ -14,13 +14,21 @@ _logger = logging.getLogger()
 _adb = ADB('adb')
 
 
-def frida_server_install(path: str):
+def frida_server_install(path: str, force_reinstall: bool = False):
     """install the given frida-server on the (rooted) connected device, through adb. 
     NOTE: frida-server is installed in /data/local/tmp/frida-server
 
     Args:
         path (str): _description_
     """
+    if force_reinstall is False:
+        # check if frida-server is there, if so exit
+        which_res = _adb.shell_command(
+            'su -c "which /data/local/tmp/frida-server"')
+        if which_res is not None:
+            _logger.warning('frida-server already installed, do not install!')
+            return
+
     path = os.path.abspath(path)
     _logger.info(
         'installing frida-server %s as /data/local/tmp/frida-server ...' % (path))
@@ -116,8 +124,9 @@ def frida_load_script(session: frida.core.Session, path: str, handlers: list = N
     Returns:
         frida.core.Script: _description_
     """
-    _logger.info('reading script at %s ...' % (path))
-    with open(path, 'r') as f:
+    p = os.path.abspath(path)
+    _logger.info('reading script at %s ...' % (p))
+    with open(p, 'r') as f:
         scr = f.read()
 
     _logger.info('loading script ...')

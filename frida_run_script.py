@@ -50,6 +50,9 @@ def main():
                         action='store_const', const=True, default=False)
     parser.add_argument('--frida_server_path', nargs=1,
                         help='if set, tries to upload and run frida-server on the device.')
+    parser.add_argument('--frida_force_reinstall',
+                        help='if set and frida_server_path is set, force reinstall even if frida-server is already there (default=False).',
+                        action='store_const', const=True, default=False)
     parser.add_argument('--device', nargs=1,
                         help="if set, use plugged device with the given serial.", default=[None])
     parser.add_argument('--parameters', nargs=1,
@@ -70,9 +73,10 @@ def main():
             _logger.info('parameters passed as JSON string: %s' %
                          (script_params))
         else:
+            par = os.path.abspath(script_params)
             _logger.info('parameters passed as file path: %s' %
-                         (script_params))
-            with open(script_params, 'r') as f:
+                         (par))
+            with open(par, 'r') as f:
                 script_params = f.read()
 
     hook_utils.adb_init_device(target_device)
@@ -89,7 +93,8 @@ def main():
         # run/install frida-server
         frida_restart = args.frida_restart
         if args.frida_server_path is not None:
-            hook_utils.frida_server_install(args.frida_server_path[0])
+            hook_utils.frida_server_install(
+                args.frida_server_path[0], args.frida_force_reinstall)
             frida_restart = False
         hook_utils.frida_server_run(frida_restart)
 
