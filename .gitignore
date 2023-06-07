@@ -1,4 +1,5 @@
 .DS_Store
+dump_registers_cfg.json
 frida-server*
 __handlers__
 __pycache__

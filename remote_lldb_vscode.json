@@ -13,6 +13,9 @@
                 "platform select remote-android",
                 "platform connect connect://:${input:port}",
                 "settings set target.inherit-env false"
+            ],
+            "postRunCommands": [
+                "process handle -p true -s false -n true SIGINT SIGSTOP SIGILL SIGSEGV SIGABRT 0x35"
             ]
         }
     ],

@@ -18,6 +18,49 @@
     ./tools/android_get_address.sh -a 0x6b6998 
     ~~~
 
+  - [frida_dump_registers.js](./frida_dump_registers.js): dumps registers and memory when frida function hook triggers.
+  
+    ~~~bash
+    ./tools/frida_run_script.py --package_name com.whatsapp --js_path ./tools/dump_registers.js --parameters ./tools/dump_registers_cfg.json --device $_CALLER
+    ~~~
+
+    an example of dump_registers_cfg.json:
+
+    ~~~js
+    {
+        "module": "libwhatsapp.so",
+        // hook point, can be offset or export name
+        "offset": "0x447b48",
+        "options": {
+            "dump_memory_size": 256,
+            "detach_after_first_hit": true,
+            // print full context
+            "print_context": false
+        },
+        "registers": {
+            // put any register here, it is shown if the key is in frida this.context
+            "x0": {
+                // show memory at $x0
+                "show_memory_at": true,
+                // show memory at *$x0
+                "show_memory_at_deref": true
+                // show memory at **$x0
+                "show_memory_at_deref_deref": true
+            },
+            "x1": {
+                "show_memory_at": true
+            }
+        },
+        "offsets": {
+            // offset from base address
+            "0x8d0a50": {
+                "show_memory_at": true
+                "show_memory_at_deref": true
+            }
+        }
+    }    
+    ~~~
+
 - [android_logcat.sh](./adb_logcat.py): runs *adb logcat* on the device, can filter for package name, supports multiple connected devices.
 
 - [android_run_lldb.sh](./android_run_lldb.sh): connects to lldb-server on device, supports multiple connected devices. uses code from [lldb.sh](https://github.com/ihnorton/lldb.sh).
