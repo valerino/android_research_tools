@@ -18,7 +18,7 @@
     ./tools/android_get_address.sh -a 0x6b6998 
     ~~~
 
-  - [frida_dump_registers.js](./dump_registers.js): dumps registers and memory when frida function hook triggers.
+  - [frida_dump_registers.js](./frida_dump_registers.js): dumps registers and memory when frida function hook triggers.
   
     ~~~bash
     ./tools/frida_run_script.py --package_name com.whatsapp --js_path ./tools/dump_registers.js --parameters ./tools/dump_registers_cfg.json --device $_CALLER
