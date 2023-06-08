@@ -61,6 +61,24 @@
     }    
     ~~~
 
+  - [frida_dump_java_method.js](./frida_dump_java_method.js): dump java method with arguments and possibly backtrace and result filtering.
+
+    ~~~bash
+    ./tools/frida_run_script.py --device 037AYV1WBW --package_name com.whatsapp --js_path ./tools/frida_dump_java_method.js --parameters '{"method": "com.whatsapp.protocol.VoipStanzaChildNode.toProtocolTreeNode", "result_regex_filter": "^<offer"}'
+    ~~~
+
+    supported parameters:
+
+    ~~~js
+    {
+        "method": "method name as package.methodname use $init as methodname for constructor",
+        "backtrace": true to print backtrace,
+        "result_regex_filter": "a_regex to match",
+        "result_num_filter": a_number, method result will be converted to string and compared,
+        "result_str_filter": a substring, method result will be lowercased and indexOf() called on it
+    }
+    ~~~
+
 - [android_logcat.sh](./adb_logcat.py): runs *adb logcat* on the device, can filter for package name, supports multiple connected devices.
 
 - [android_run_lldb.sh](./android_run_lldb.sh): connects to lldb-server on device, supports multiple connected devices. uses code from [lldb.sh](https://github.com/ihnorton/lldb.sh).
