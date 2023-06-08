@@ -56,21 +56,25 @@ function trace_java_method(js_params) {
 
             }
 
+            console.log('--------' + classmethod + 'called !---------------')
             if (backtrace) {
                 // print backtrace
-                console.log("\nBacktrace:\n" + bt);
+                console.log(classmethod + " backtrace:\n" + bt);
+                console.log('\n')
             }
 
             // print args
-            if (arguments.length) {
-                console.log();
+            console.log(classmethod + ' num arguments=' + arguments.length);
+            if (arguments.length > 0) {
+                for (var j = 0; j < arguments.length; j++) {
+                    console.log(classmethod + " arg[" + j + "]: " + arguments[j]);
+                }
             }
-            for (var j = 0; j < arguments.length; j++) {
-                console.log("arg[" + j + "]: " + arguments[j]);
-            }
+            console.log('\n')
 
             // print retval            
-            console.log("\nretval: " + retval);
+            console.log(classmethod + " returnvalue=" + retval);
+            console.log('-----------------------')
             return retval;
         }
     }
