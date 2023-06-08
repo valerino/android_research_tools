@@ -21,7 +21,7 @@
   - [frida_dump_registers.js](./frida_dump_registers.js): dumps registers and memory when frida function hook triggers.
   
     ~~~bash
-    ./tools/frida_run_script.py --package_name com.whatsapp --js_path ./tools/dump_registers.js --parameters ./tools/dump_registers_cfg.json --device $_CALLER
+    ./tools/frida_run_script.py --package_name com.whatsapp --js_path ./tools/frida_dump_registers.js --parameters ./tools/dump_registers_cfg.json --device $_CALLER
     ~~~
 
     an example of dump_registers_cfg.json:
