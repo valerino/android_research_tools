@@ -51,12 +51,20 @@ function dump(context, base, registers, offsets, options) {
     if (dump_size == null) {
         dump_size = 256
     }
+    const stacktrace = options["print_stacktrace"]
     const print_all_registers = options["print_context"]
     if (print_all_registers) {
         console.log("--------------------------------------")
         console.log("context at PC=" + context.pc)
         console.log("--------------------------------------")
         console.log(JSON.stringify(context, null, '\t'))
+    }
+    if (stacktrace) {
+        var st = Thread.backtrace(context, Backtracer.ACCURATE).map(DebugSymbol.fromAddress).join("\n\t")
+        console.log("--------------------------------------")
+        console.log("stacktrace\n\t")
+        console.log(st)
+        console.log("--------------------------------------")
     }
     if (registers) {
         const registers_keys = Object.keys(registers)
@@ -99,7 +107,7 @@ function script_main(params) {
         addr = base.add(offset)
     }
     else {
-        addr = Process.findModuleByName(js_params.module).getExportByName(js_params.name)
+        addr = Process.findModuleByName(js_params.module).getExportByName(js_params.offset)
     }
     var js = {
         "pid": Process.id,

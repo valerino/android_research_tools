@@ -35,7 +35,9 @@
             "dump_memory_size": 256,
             "detach_after_first_hit": true,
             // print full context
-            "print_context": false
+            "print_context": false,
+            // print stacktrace
+            "print_stacktrace": false
         },
         "registers": {
             // put any register here, it is shown if the key is in frida this.context
