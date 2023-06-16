@@ -1,5 +1,7 @@
 var js_params = null
 var base = null
+var _hits = 0
+
 rpc.exports = {
     run: script_main,
 }
@@ -47,7 +49,12 @@ function dump_internal(addr, dump_size, node_options) {
 }
 
 function dump(context, base, registers, offsets, options) {
-    const dump_size = options["dump_memory_size"]
+    if (options['detach_after_first_hit'] && _hits > 0) {
+        return
+    }
+    _hits += 1
+
+    var dump_size = options["dump_memory_size"]
     if (dump_size == null) {
         dump_size = 256
     }
@@ -60,7 +67,7 @@ function dump(context, base, registers, offsets, options) {
         console.log(JSON.stringify(context, null, '\t'))
     }
     if (stacktrace) {
-        var st = Thread.backtrace(context, Backtracer.ACCURATE).map(DebugSymbol.fromAddress).join("\n\t")
+        var st = Thread.backtrace(context, Backtracer.ACCURATE).map(DebugSymbol.fromAddress).join("\t\n")
         console.log("--------------------------------------")
         console.log("stacktrace\n\t")
         console.log(st)
@@ -126,7 +133,7 @@ function script_main(params) {
             // dump registers
             dump(this.context, base, js_params['registers'], js_params['offsets'], js_params["options"])
             if (js_params["options"]) {
-                if (js_params["options"]["detach_after_first_hit"]) {
+                if (js_params["options"]["detach_after_first_hit"] == true) {
                     send("detach")
                 }
             }

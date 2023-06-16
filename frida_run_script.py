@@ -32,6 +32,8 @@ def on_message(message, data):
             return
 
     if _outfile is not None and data is not None:
+        # by default, if data is not None and _outfile is provided, write content to _outfile
+        #  TODO: maybe change this in favor of proper command ...
         _outfile.write(data)
 
 

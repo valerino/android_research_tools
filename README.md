@@ -18,7 +18,7 @@
     ./tools/android_get_address.sh -a 0x6b6998 
     ~~~
 
-  - [frida_dump_registers.js](./frida_dump_registers.js): dumps registers and memory when frida function hook triggers.
+  - [frida_dump_registers.js](./frida_dump_registers.js): dumps registers, stacktrace, memory when frida function hook triggers.
   
     ~~~bash
     ./tools/frida_run_script.py --package_name com.whatsapp --js_path ./tools/frida_dump_registers.js --parameters ./tools/dump_registers_cfg.json --device $_CALLER
@@ -61,6 +61,13 @@
             }
         }
     }    
+    ~~~
+
+  - [android_print_native_stacktrace.sh](./android_print_native_stacktrace.sh): shortcut for *frida_run_script.py* + *frida_dump_registers.js* with only the *"print_stacktrace"* option activated.
+    
+    ~~~bash
+    # -p, -d, -m can be set also with, respectively, _DEVICE, _PROCESS, _MODULE environment variables
+    ./tools/android_print_native_stacktrace.sh -a 0x50b7f0 -d $_RECEIVER -p com.whatsapp -m libwhatsapp.so
     ~~~
 
   - [frida_dump_java_method.js](./frida_dump_java_method.js): dump java method with arguments and possibly backtrace and result filtering.
