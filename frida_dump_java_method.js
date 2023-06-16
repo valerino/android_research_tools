@@ -1,12 +1,21 @@
 rpc.exports = {
     run: script_main,
 }
+var _num_hits = 0
 
 function trace_java_method(js_params) {
-    var result_regex_filter = js_params.result_regex_filter
-    var result_str_filter = js_params.result_str_filter
-    var backtrace = js_params.backtrace
-    var result_num_filter = js_params.result_num_filter
+    var options = js_params['options']
+    if (options == null) {
+        options = JSON.parse('{}')
+    }
+
+    var result_regex_filter = options.result_regex_filter
+    var result_str_filter = options.result_str_filter
+    var print_stacktrace = options.print_stacktrace
+    var print_parameters = options.print_parameters
+    var print_result = options.print_result
+    var detach_after_first_hit = options.detach_after_first_hit
+    var result_num_filter = options.result_num_filter
     var classmethod = js_params.method
 
     var delim = classmethod.lastIndexOf(".");
@@ -33,14 +42,21 @@ function trace_java_method(js_params) {
         console.log("tracing " + classmethod + " [" + overloadCount + " overload(s)]");
         for (var i = 0; i < overloadCount; i++) {
             hook[target_method].overloads[i].implementation = function () {
+                /**
+                 * we're in the hooked function/overload here
+                 */
                 let bt = null
-                if (backtrace) {
-                    // get  backtrace
-                    bt = Java.use("android.util.Log").getStackTraceString(Java.use("java.lang.Exception").$new());
+                if (print_stacktrace) {
+                    // get stacktrace
+                    bt = Java.use("android.util.Log").getStackTraceString(Java.use("java.lang.Exception").$new("(dummy exception)"));
                 }
 
                 // get result
                 var retval = this[target_method].apply(this, arguments);
+                if (detach_after_first_hit && _num_hits > 0) {
+                    return retval
+                }
+                _num_hits += 1
 
                 // filter
                 try {
@@ -67,23 +83,32 @@ function trace_java_method(js_params) {
                 }
 
                 console.log('--------' + classmethod + ' called !---------------')
-                if (backtrace) {
-                    // print backtrace
-                    console.log(classmethod + " backtrace:\n" + bt);
+                if (print_stacktrace) {
+                    // print stacktrace
+                    console.log(classmethod + " stacktrace:\n" + bt);
                 }
 
-                // print args
-                console.log(classmethod + ' num arguments=' + arguments.length);
-                if (arguments.length > 0) {
-                    for (var j = 0; j < arguments.length; j++) {
-                        
-                        console.log(classmethod + " arg[" + j + "], type=" + typeof (arguments[j]) + ", val=" + arguments[j]);
+                if (print_parameters) {
+                    // print args
+                    console.log(classmethod + ' num arguments=' + arguments.length);
+                    if (arguments.length > 0) {
+                        for (var j = 0; j < arguments.length; j++) {
+
+                            console.log(classmethod + " arg[" + j + "], type=" + typeof (arguments[j]) + ", val=" + arguments[j]);
+                        }
                     }
                 }
 
-                // print retval            
-                console.log(classmethod + " retval type=" + typeof (retval) + ", val=" + retval);
-                console.log('\n')
+                if (print_result) {
+                    // print retval            
+                    console.log(classmethod + " retval type=" + typeof (retval) + ", val=" + retval);
+                    console.log('\n')
+                }
+
+                if (detach_after_first_hit) {
+                    send("detach")
+                }
+
                 return retval;
             }
         }

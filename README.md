@@ -73,19 +73,31 @@
   - [frida_dump_java_method.js](./frida_dump_java_method.js): dump java method with arguments and possibly backtrace and result filtering.
 
     ~~~bash
-    ./tools/frida_run_script.py --device 037AYV1WBW --package_name com.whatsapp --js_path ./tools/frida_dump_java_method.js --parameters '{"method": "com.whatsapp.protocol.VoipStanzaChildNode.toProtocolTreeNode", "result_regex_filter": "^<offer"}'
+    ./tools/frida_run_script.py --device 037AYV1WBW --package_name com.whatsapp --js_path ./tools/frida_dump_java_method.js --parameters '{"method": "com.whatsapp.protocol.VoipStanzaChildNode.toProtocolTreeNode", "options": {"result_regex_filter": "^<offer", "print_parameters": true, "print_result": true, "print_stacktrace": true } }'
     ~~~
 
-    supported parameters:
+    supported parameters (can also be put used in a json file to be passed as *--parameters* ):
 
     ~~~js
     {
         "method": "method name as package.methodname use $init as methodname for constructor",
-        "backtrace": true to print backtrace,
-        "result_regex_filter": "a_regex to match",
-        "result_num_filter": a_number, method result will be converted to string and compared,
-        "result_str_filter": a substring, method result will be lowercased and indexOf() called on it
+        "options": {
+            "print_stacktrace": true // to print stacktrace
+            "detach_after_first_hit": false,
+            "print_parameters": true,
+            "print_result": true,
+            "result_regex_filter": "a_regex to match",
+            "result_num_filter": 1234 // number, method result will be converted to string and compared,
+            "result_str_filter": "a substring, method result will be lowercased and indexOf() called on it"
+        }
     }
+    ~~~
+
+  - [android_print_jvm_stacktrace.sh](./android_print_jvm_stacktrace.sh): shortcut for *frida_run_script.py* + *frida_dump_java_method.js* with only the *"print_stacktrace"* option activated.
+    
+    ~~~bash
+    # -p, -d, -m can be set also with, respectively, _DEVICE, _PROCESS, _MODULE environment variables
+    ./tools/android_print_jvm_stacktrace.sh -d "$_CALLER" -p com.whatsapp -m com.whatsapp.protocol.VoipStanzaChildNode.toProtocolTreeNode
     ~~~
 
 - [android_logcat.sh](./adb_logcat.py): runs *adb logcat* on the device, can filter for package name, supports multiple connected devices.
