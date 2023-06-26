@@ -47,7 +47,9 @@
                 // show memory at *$x0
                 "show_memory_at_deref": true
                 // show memory at **$x0
-                "show_memory_at_deref_deref": true
+                "show_memory_at_deref_deref": true,
+                // useful to find branch offset in instructions like i.e. blr x0
+                "calc_offset_from_base": true
             },
             "x1": {
                 "show_memory_at": true

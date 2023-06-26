@@ -6,10 +6,15 @@ rpc.exports = {
     run: script_main,
 }
 
-function dump_internal(addr, dump_size, node_options) {
+function dump_internal(base, addr, dump_size, node_options) {
     const show_mem = node_options['show_memory_at']
     const show_mem_at_deref = node_options['show_memory_at_deref']
     const show_mem_at_deref_deref = node_options['show_memory_at_deref_deref']
+    const calc_offset_from_base = node_options['calc_offset_from_base']
+    if (calc_offset_from_base) {
+        const offs = addr.sub(base)
+        console.log("base=" + base, ", addr=" + addr + ", offset from base=" + offs)
+    }
     if (show_mem) {
         try {
             console.log("dumping " + dump_size + " bytes at " + addr)
@@ -82,7 +87,7 @@ function dump(context, base, registers, offsets, options) {
                 console.log("dumping register " + k + "=" + context[k])
                 console.log("--------------------------------------")
                 const reg_addr = ptr(context[k])
-                dump_internal(reg_addr, dump_size, registers[k])
+                dump_internal(base, reg_addr, dump_size, registers[k])
             }
         }
     }
@@ -97,7 +102,7 @@ function dump(context, base, registers, offsets, options) {
             console.log("--------------------------------------")
             console.log("dumping offset " + k + ", address=" + full_addr)
             console.log("--------------------------------------")
-            dump_internal(full_addr, dump_size, offsets[k])
+            dump_internal(base, full_addr, dump_size, offsets[k])
         }
     }
 }
